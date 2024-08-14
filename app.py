@@ -1,17 +1,22 @@
-from flask import Flask, request, send_file, render_template_string, abort
+from flask import Flask, request, send_file, after_this_request, abort
 import yt_dlp
 import os
-import pathlib
+import tempfile
+import logging
 
 app = Flask(__name__)
 
-# Define DOWNLOAD_FOLDER as the user's Downloads directory
-DOWNLOAD_FOLDER = str(pathlib.Path.home() / 'Downloads')
+# Use system temporary directory
+DOWNLOAD_FOLDER = tempfile.gettempdir()
 
-# Ensure the folder exists
-os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
 def download_youtube_video(url, file_path):
+    logging.debug(f"File path for download: {file_path}")
+    logging.debug(f"Directory exists: {os.path.isdir(DOWNLOAD_FOLDER)}")
+    logging.debug(f"Directory writable: {os.access(DOWNLOAD_FOLDER, os.W_OK)}")
+
     ydl_opts = {
         'format': 'bestvideo+bestaudio/best',
         'merge_output_format': 'mp4',
@@ -20,9 +25,10 @@ def download_youtube_video(url, file_path):
     }
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            logging.debug(f"Downloading video from URL: {url}")
             ydl.download([url])
     except Exception as e:
-        print(f"Error downloading video: {e}")
+        logging.error(f"Error downloading video: {e}")
         return False
     return True
 
@@ -34,8 +40,17 @@ def index():
         
         # Download the video
         if download_youtube_video(video_url, file_path):
+            @after_this_request
+            def cleanup(response):
+                try:
+                    os.remove(file_path)
+                    logging.debug(f"Deleted file: {file_path}")
+                except Exception as e:
+                    logging.error(f"Error deleting file: {e}")
+                return response
+            
             # Send file to user
-            return send_file(file_path, as_attachment=True)
+            return send_file(file_path, as_attachment=True, download_name='video.mp4')
         else:
             return "Error downloading video. Please check the URL and try again.", 400
     
@@ -147,7 +162,7 @@ def index():
 @app.route('/google77a5f11be42b0911.html')
 def google_verification():
     try:
-        return send_file('google77a5f11be42b0911.html')
+        return send_file('/path/to/google77a5f11be42b0911.html')
     except FileNotFoundError:
         abort(404)
 
