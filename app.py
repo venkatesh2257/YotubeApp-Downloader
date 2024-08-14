@@ -37,6 +37,19 @@ def index():
     <!DOCTYPE html>
     <html lang="en">
     <head>
+
+    
+            <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FH4VDTEZ0W"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FH4VDTEZ0W');
+</script>
+
+
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="google-site-verification" content="google77a5f11be42b0911.html" />
@@ -115,15 +128,6 @@ def index():
             }
         </style>
     </head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FH4VDTEZ0W"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-FH4VDTEZ0W');
-</script>
     <body>
         <div class="container">
             <div class="header">1080 Quality</div>
