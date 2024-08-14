@@ -18,21 +18,14 @@ os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 def download_youtube_video(url, file_path):
     ydl_opts = {
         'format': 'bestvideo+bestaudio/best',
-        'merge_output_format': 'mp4',
         'outtmpl': file_path,
         'noplaylist': True,
-        # Uncomment and configure the following if you need to use a proxy
-        # 'proxy': 'http://<proxy-ip>:<port>',
-        'http_chunk_size': 1048576,  # 1MB
-        'socket_timeout': 60,  # Increase timeout if necessary
-        'headers': {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        },
     }
     try:
+        logging.debug(f"Attempting to download video from URL: {url}")
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            logging.debug(f"Downloading video from URL: {url}")
             ydl.download([url])
+        logging.debug(f"Download completed successfully. File saved to: {file_path}")
     except Exception as e:
         logging.error(f"Error downloading video: {e}")
         return False
@@ -42,6 +35,10 @@ def download_youtube_video(url, file_path):
 def index():
     if request.method == 'POST':
         video_url = request.form.get('youtube-url')
+        if not video_url:
+            logging.error("No URL provided")
+            return "Error: No URL provided.", 400
+        
         file_path = os.path.join(DOWNLOAD_FOLDER, 'video.mp4')
         
         # Download the video
