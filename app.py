@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file, render_template_string
+from flask import Flask, request, send_file, render_template_string, abort
 import yt_dlp
 import os
 import pathlib
@@ -18,8 +18,13 @@ def download_youtube_video(url, file_path):
         'outtmpl': file_path,
         'noplaylist': True,
     }
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+    except Exception as e:
+        print(f"Error downloading video: {e}")
+        return False
+    return True
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -28,30 +33,27 @@ def index():
         file_path = os.path.join(DOWNLOAD_FOLDER, 'video.mp4')
         
         # Download the video
-        download_youtube_video(video_url, file_path)
-        
-        # Send file to user
-        return send_file(file_path, as_attachment=True)
+        if download_youtube_video(video_url, file_path):
+            # Send file to user
+            return send_file(file_path, as_attachment=True)
+        else:
+            return "Error downloading video. Please check the URL and try again.", 400
     
     return '''
     <!DOCTYPE html>
     <html lang="en">
     <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-EE3LFJRRMF"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
 
-    
-            <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-EE3LFJRRMF"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-EE3LFJRRMF');
-</script>
-
+          gtag('config', 'G-EE3LFJRRMF');
+        </script>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="google-site-verification: google3ddcad01f034f9c0.html" />
         <title>YouTube Downloader</title>
         <style>
             body {
@@ -144,7 +146,10 @@ def index():
 # Serve the Google verification file
 @app.route('/google77a5f11be42b0911.html')
 def google_verification():
-    return send_file('google77a5f11be42b0911.html')
+    try:
+        return send_file('google77a5f11be42b0911.html')
+    except FileNotFoundError:
+        abort(404)
 
 if __name__ == '__main__':
     app.run(debug=True)
