@@ -40,19 +40,18 @@ def index():
 
     
             <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FH4VDTEZ0W"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EE3LFJRRMF"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-FH4VDTEZ0W');
+  gtag('config', 'G-EE3LFJRRMF');
 </script>
-
 
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="google-site-verification" content="google77a5f11be42b0911.html" />
+        <meta name="google-site-verification: google3ddcad01f034f9c0.html" />
         <title>YouTube Downloader</title>
         <style>
             body {
