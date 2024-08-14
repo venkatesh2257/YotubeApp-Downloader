@@ -1,27 +1,33 @@
-from flask import Flask, request, send_file, after_this_request, abort
+from flask import Flask, request, send_file, abort
 import yt_dlp
 import os
-import tempfile
+import pathlib
 import logging
-
-app = Flask(__name__)
-
-# Use system temporary directory
-DOWNLOAD_FOLDER = tempfile.gettempdir()
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-def download_youtube_video(url, file_path):
-    logging.debug(f"File path for download: {file_path}")
-    logging.debug(f"Directory exists: {os.path.isdir(DOWNLOAD_FOLDER)}")
-    logging.debug(f"Directory writable: {os.access(DOWNLOAD_FOLDER, os.W_OK)}")
+app = Flask(__name__)
 
+# Define DOWNLOAD_FOLDER as a temporary directory
+DOWNLOAD_FOLDER = str(pathlib.Path.home() / 'Downloads')
+
+# Ensure the folder exists
+os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
+
+def download_youtube_video(url, file_path):
     ydl_opts = {
         'format': 'bestvideo+bestaudio/best',
         'merge_output_format': 'mp4',
         'outtmpl': file_path,
         'noplaylist': True,
+        # Uncomment and configure the following if you need to use a proxy
+        # 'proxy': 'http://<proxy-ip>:<port>',
+        'http_chunk_size': 1048576,  # 1MB
+        'socket_timeout': 60,  # Increase timeout if necessary
+        'headers': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        },
     }
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -40,15 +46,6 @@ def index():
         
         # Download the video
         if download_youtube_video(video_url, file_path):
-            @after_this_request
-            def cleanup(response):
-                try:
-                    os.remove(file_path)
-                    logging.debug(f"Deleted file: {file_path}")
-                except Exception as e:
-                    logging.error(f"Error deleting file: {e}")
-                return response
-            
             # Send file to user
             return send_file(file_path, as_attachment=True, download_name='video.mp4')
         else:
@@ -162,7 +159,7 @@ def index():
 @app.route('/google77a5f11be42b0911.html')
 def google_verification():
     try:
-        return send_file('/path/to/google77a5f11be42b0911.html')
+        return send_file('google77a5f11be42b0911.html')
     except FileNotFoundError:
         abort(404)
 
