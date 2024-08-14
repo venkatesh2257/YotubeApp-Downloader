@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, render_template_string
 import yt_dlp
 import os
 import pathlib
@@ -33,13 +33,13 @@ def index():
         # Send file to user
         return send_file(file_path, as_attachment=True)
     
-    # HTML content directly embedded here, with CSS included
     return '''
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="google-site-verification" content="google77a5f11be42b0911.html" />
         <title>YouTube Downloader</title>
         <style>
             body {
@@ -128,6 +128,11 @@ def index():
     </body>
     </html>
     '''
+
+# Serve the Google verification file
+@app.route('/google77a5f11be42b0911.html')
+def google_verification():
+    return send_file('google77a5f11be42b0911.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
