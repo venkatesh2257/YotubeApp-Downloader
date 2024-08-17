@@ -16,8 +16,9 @@ DOWNLOAD_FOLDER = str(pathlib.Path.home() / 'Downloads')
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 def download_youtube_video(url, file_path):
+    # Updated ydl_opts with the specific formats you want
     ydl_opts = {
-        'format': 'bestvideo+bestaudio/best',
+        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
         'outtmpl': file_path,
         'noplaylist': True,
     }
@@ -48,109 +49,8 @@ def index():
         else:
             return "Error downloading video. Please check the URL and try again.", 400
     
-    return '''
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-EE3LFJRRMF"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-EE3LFJRRMF');
-        </script>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>YouTube Downloader</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
-                margin: 0;
-                padding: 0;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-            }
-
-            .container {
-                background-color: white;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                max-width: 400px;
-                width: 100%;
-                position: relative;
-            }
-
-            h1 {
-                color: #ff0000;
-                margin-bottom: 20px;
-                text-align: center;
-            }
-
-            .header {
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                font-weight: bold;
-                color: red;
-                font-size: 8px;
-            }
-
-            label {
-                display: block;
-                margin-bottom: 10px;
-                color: #333;
-            }
-
-            input[type="text"] {
-                width: calc(100% - 22px);
-                padding: 10px;
-                margin-bottom: 20px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-            }
-
-            button {
-                width: 100%;
-                padding: 10px 20px;
-                background-color: #ff0000;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                font-size: 16px;
-            }
-
-            button:hover {
-                background-color: #cc0000;
-            }
-
-            .note {
-                margin-top: 20px;
-                font-size: 12px;
-                color: #888;
-                text-align: center;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">1080 Quality</div>
-            <h1>Download Video</h1>
-            <form id="download-form" method="POST">
-                <label for="youtube-url">Enter YouTube Video URL:</label>
-                <input type="text" id="youtube-url" name="youtube-url" placeholder="https://www.youtube.com/watch?v=example" required>
-                <button type="submit">Download</button>
-            </form>
-        </div>
-    </body>
-    </html>
-    '''
+    # Serve the index.html file from the root directory
+    return send_file('index.html')
 
 # Serve the Google verification file
 @app.route('/google77a5f11be42b0911.html')
